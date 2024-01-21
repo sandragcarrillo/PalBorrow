@@ -1,10 +1,38 @@
-import React from 'react';
-import { ConnectKitButton } from 'connectkit';
+import React, { useState , ChangeEvent} from 'react';
 import { useAccount } from "wagmi";
+import {
+  getRiskLevel,
+  getRewards,
+  getLimit,
+  getPeriod,
+  getElegibility,
+  getBalance,
+  getHistorical,
+} from './WalletData';
+
 
 const App = () => {
 
   const {isConnected, isDisconnected } = useAccount();
+  const [friendWallet, setFriendWallet] = useState('');
+
+  const [friendWalletRisk, setFriendWalletRisk] = useState<string | null>(null);
+
+  const handleFriendWalletChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const wallet = event.target.value;
+    setFriendWallet(wallet);
+  
+  
+
+    const risk = getRiskLevel(wallet);
+
+    setFriendWalletRisk(risk);
+
+
+};
+
+
+  
 
   if (isConnected) {
     return  <div> 
@@ -24,15 +52,15 @@ const App = () => {
                 height="24"
               />
             </svg>
-            <span className="relative">Don't trust.</span>
+            <span className="relative">Don't trust...</span>
           </span>{' '}
           Just verify
         </h2>
         <input
             type='text'
             placeholder="Paste your friend's wallet here"
-            // value={friendWallet}
-            // onChange={handleFriendWalletChange}
+            value={friendWallet}
+            onChange={handleFriendWalletChange}
             className="w-full rounded-2xl border border-indigo-500 p-2 text-center"
           />
       </div>
@@ -65,16 +93,21 @@ const App = () => {
             <div>
               <p className="mb-2 font-bold tracking-wide">Let's see if you can trust</p>
               <ul className="space-y-2">
-                <li className="flex items-center">
+              <li className="flex items-center">
                   <p className="font-medium text-gray-800">
-                    Historical balance:
+                    Current balance: {getBalance(friendWallet)}
                   </p>
                 </li>
                 <li className="flex items-center">
-                  <p className="font-medium text-gray-800">Risk:</p>
+                  <p className="font-medium text-gray-800">
+                    Historical balance: {getHistorical(friendWallet)}
+                  </p>
                 </li>
                 <li className="flex items-center">
-                  <p className="font-medium text-gray-800">Elegibility:</p>
+                  <p className="font-medium text-gray-800">Risk: {friendWalletRisk} </p>
+                </li>
+                <li className="flex items-center">
+                  <p className="font-medium text-gray-800">Elegibility:{getElegibility(friendWallet)}</p>
                 </li>
               </ul>
             </div>
@@ -134,15 +167,15 @@ const App = () => {
               <p className="mb-2 font-bold tracking-wide">Recommendations</p>
               <ul className="space-y-2">
                 <li className="flex items-center">
-                  <p className="font-medium text-gray-800">Limit value:</p>
+                  <p className="font-medium text-gray-800">Limit value: {getLimit(friendWallet)}</p>
                 </li>
                 <li className="flex items-center">
                   <p className="font-medium text-gray-800">
-                    Borrow period:
+                    Borrow period: {getPeriod(friendWallet)}
                   </p>
                 </li>
                 <li className="flex items-center">
-                  <p className="font-medium text-gray-800">Rewards:</p>
+                  <p className="font-medium text-gray-800">Rewards:{getRewards(friendWallet)} </p>
                 </li>
               </ul>
             </div>
@@ -166,7 +199,7 @@ const App = () => {
   if (isDisconnected) {return (
     <div>
     <div className='items-center h-100 bg-gradient-to-r from-indigo-700 to-indigo-900 p-20'>
-      <h1 className='text-white text-6xl text-center font-bold my-10'>Borrow stablecoins from your pals</h1>
+      <h1 className='text-white text-6xl text-center font-bold my-10'>Borrow stablecoins to your pals</h1>
       <p className='text-white text-xl text-center font-bold pb-10'>Check, earn points, protect your friendship</p>
     </div>
     
@@ -210,14 +243,14 @@ const App = () => {
     <a className="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600" href="#">
       <div className="p-4 md:p-5">
         <div className="flex">
-          <svg className="mt-1 flex-shrink-0 w-5 h-5 text-gray-800 dark:text-gray-200" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 8.4c.5.38.8.97.8 1.6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 .8-1.6l8-6a2 2 0 0 1 2.4 0l8 6Z"/><path d="m22 10-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 10"/></svg>
+          <svg className="mt-1 flex-shrink-0 w-5 h-5 text-gray-800 dark:text-gray-200" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.739,13.962c-0.087,0.086-0.199,0.131-0.312,0.131c-0.112,0-0.226-0.045-0.312-0.131l-3.738-3.736c-0.173-0.173-0.173-0.454,0-0.626l3.559-3.562c0.173-0.175,0.454-0.173,0.626,0c0.173,0.172,0.173,0.451,0,0.624l-3.248,3.25l3.425,3.426C11.911,13.511,11.911,13.789,11.739,13.962 M18.406,10c0,4.644-3.763,8.406-8.406,8.406S1.594,14.644,1.594,10S5.356,1.594,10,1.594S18.406,5.356,18.406,10 M17.521,10c0-4.148-3.373-7.521-7.521-7.521c-4.148,0-7.521,3.374-7.521,7.521c0,4.148,3.374,7.521,7.521,7.521C14.147,17.521,17.521,14.148,17.521,10"></path></svg>
 
           <div className="grow ms-5">
             <h3 className="group-hover:text-blue-600 font-semibold text-gray-800 dark:group-hover:text-gray-400 dark:text-gray-200">
-              Email us
+              Get recommendations for your borrow
             </h3>
             <p className="text-sm text-gray-500">
-              Reach us at <span className="text-blue-600 font-medium dark:text-blue-500">info@site.com</span>
+              Get insights on periods, value limits and more
             </p>
           </div>
         </div>
