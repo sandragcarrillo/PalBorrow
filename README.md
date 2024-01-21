@@ -1,6 +1,6 @@
 # PalBorrow
 
-If we have learned somehting in Blockchain, specially in critp is that you shouldn't trust, verify. 
+If we have learned something in Blockchain, specially in DeFi is that you shouldn't trust, verify. 
 
 Even when you are borrowing money to a pal, you should verify if it's risky to do it, and thankfully, we have GHO data to discover it, and keep your friendship healthty.
 
